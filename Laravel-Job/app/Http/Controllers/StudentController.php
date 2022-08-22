@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Imports\StudentImport;
 use App\Jobs\ImportExcelData;
+use App\Models\Sheet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
@@ -24,11 +25,18 @@ class StudentController extends Controller
         ]);
         
         $path1 = $request->file('file')->store('temp'); 
-        $path = storage_path('app').'/'.$path1;  
+        $path = storage_path('app').'/'.$path1; 
 
-        dispatch(new ImportExcelData($path));
+        Sheet::create([
+            'sheet_name' => htmlspecialchars($path1),
+        ]);
 
-        return redirect('/')->with('status', 'The file Has Been Imported to Database in Laravel 9');
+        /* 
+           We will use this command if we want to import excel using job. 
+           dispatch(new ImportExcelData($path));
+        */ 
+
+        return redirect('/')->with('status', 'Import in Progress, We will notify once Import Successful.');
     }
 
 }
